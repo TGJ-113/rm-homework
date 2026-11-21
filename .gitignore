@@ -1,0 +1,16 @@
+
+**/MDK-ARM/task1/
+**/MDK-ARM/task2/
+**/MDK-ARM/task3/
+**/*.uvguix.*
+*.o
+*.d
+*.axf
+*.hex
+*.map
+*.lst
+*.crf
+*.dep
+*.lnp
+*.sct
+*.bak
