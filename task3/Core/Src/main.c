@@ -42,7 +42,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-volatile uint32_t key_edge_count = 0U;
+volatile uint32_t key_edge_flag = 0U;
 
 /* USER CODE END PV */
 
@@ -92,6 +92,7 @@ GPIO_PinState stable_level = GPIO_PIN_SET;
 GPIO_PinState candidate_level = GPIO_PIN_SET;
 uint32_t scan_last = HAL_GetTick();
 uint32_t candidate_since = scan_last;
+uint32_t scanning = 0U;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -99,6 +100,18 @@ uint32_t candidate_since = scan_last;
   while (1)
   {
 		uint32_t now = HAL_GetTick();
+		if(key_edge_flag)
+		{
+			key_edge_flag = 0U;
+			scanning = 1U;
+			scan_last = now;
+			candidate_level = GPIO_PIN_SET;
+			candidate_since = now;
+			
+		}
+		if (scanning == 0U)
+          continue;
+		
 		if((uint32_t)(now - scan_last) >= 1U)
 		{
 			scan_last = now;
@@ -110,14 +123,14 @@ uint32_t candidate_since = scan_last;
 			}else if(level != stable_level && (uint32_t)(now - candidate_since) >= 20U)
 			{
 				stable_level = level;
+				scanning = 0U;
 				if(stable_level == GPIO_PIN_RESET)
 				{
 					HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 				}
-			
+		  }
 		}
-	}
-			
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -189,7 +202,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : KEY_Pin */
   GPIO_InitStruct.Pin = KEY_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(KEY_GPIO_Port, &GPIO_InitStruct);
 
@@ -207,7 +220,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	if(GPIO_Pin == KEY_Pin)
 	{
-		key_edge_count++;
+		key_edge_flag = 1U;
 	}
 }
 
