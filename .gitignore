@@ -1,7 +1,4 @@
-
-**/MDK-ARM/task1/
-**/MDK-ARM/task2/
-**/MDK-ARM/task3/
+**/MDK-ARM/*/
 **/*.uvguix.*
 *.o
 *.d
